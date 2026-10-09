@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0e0e10" />
+    <link rel="icon" type="image/png" href="~/images/mini-logo.png" />
+    <title>@ViewData["Title"] · Battle Arena</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/arena-theme.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" asp-controller="PublicSite" asp-action="Index"><img class="brand-logo" src="~/images/mini-logo.png" alt="Battle Arena logo" /><span>BATTLE ARENA<span class="brand-sub">Scienter Welfare Team</span></span></a>
+    <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="site-navigation" aria-expanded="false">☰</button>
+    <nav class="site-nav" id="site-navigation" aria-label="Main navigation">
+        <a asp-controller="PublicSite" asp-action="Index">Event</a>
+        <a asp-controller="PublicSite" asp-action="Schedule">Schedule</a>
+        <a asp-controller="PublicSite" asp-action="Teams">COD4 teams</a>
+        <a asp-controller="PublicSite" asp-action="Racers">NFS racers</a>
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+        {
+            <a class="admin-activity-link" asp-controller="Admin" asp-action="Activity">Activity log</a>
+        }
+        <div class="nav-dropdown"><button type="button">Leaderboards <span>⌄</span></button><div class="dropdown-menu"><a asp-controller="PublicSite" asp-action="Cod4Leaderboard">COD4 standings</a><a asp-controller="PublicSite" asp-action="NfsLeaderboard">NFS championship</a></div></div>
+        <a class="nav-register" asp-controller="PublicSite" asp-action="Index" asp-fragment="register">Register now ↗</a>
+    </nav>
+    <a class="header-cta" asp-controller="PublicSite" asp-action="Index" asp-fragment="register">Register <span>↗</span></a>
+</header>
+<main>@RenderBody()</main>
+<footer class="site-footer"><a class="brand footer-brand" asp-controller="PublicSite" asp-action="Index"><img class="brand-logo" src="~/images/mini-logo.png" alt="Battle Arena logo" /><span>BATTLE ARENA<span class="brand-sub">Scienter Welfare Team</span></span></a><a asp-controller="PublicSite" asp-action="Rules">TOURNAMENT RULES</a><a href="/admin/login">ADMIN</a><span>Scienter Welfare Team · 07 OCTOBER 2026</span><span>LOCAL NETWORK · LIVE TOURNAMENT</span></footer>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

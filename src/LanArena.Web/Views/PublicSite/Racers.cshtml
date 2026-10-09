@@ -1,0 +1,38 @@
+@model PublicTournamentSnapshot
+@{ ViewData["Title"] = "NFS Racers"; }
+@section Styles {
+    <link rel="stylesheet" href="~/css/racers-arena.css" asp-append-version="true" />
+}
+<section class="page-hero wrap race-page-hero"><div class="eyebrow"><i class="race-live-dot"></i> NEED FOR SPEED · MOST WANTED 2005 <span>INDIVIDUAL CHAMPIONSHIP</span></div><h1>Drivers on <em>the grid.</em></h1><p>Four racers per heat. Race fair, race fast, claim your place.</p><div class="page-meta"><span>@Model.Racers.Count registered racers</span><span>Registration requires admin approval</span></div><div class="race-hero-code" aria-hidden="true">STREET<br /><b>RACE</b></div></section>
+<section class="section wrap racer-grid-section race-roster-section">
+    <div class="racer-grid race-roster-grid">
+        @foreach (var (racer, index) in Model.Racers.OrderByDescending(r => r.Points).ThenByDescending(r => r.Wins).Select((r, i) => (r, i)))
+        {
+            var statusClass = racer.Status.ToLowerInvariant() switch
+            {
+                "approved" => "approved",
+                "rejected" => "rejected",
+                _ => "pending"
+            };
+            <article class="racer-card race-card">
+                <div class="racer-card-head">
+                    <div class="racer-identity">
+                        <span class="racer-emblem" aria-hidden="true"><b>NFS</b><i></i><span class="racer-speedlines"></span></span>
+                        <div class="racer-name-block">
+                            <span class="racer-code">@(index + 1 < 10 ? $"GRID {index + 1:00}" : $"GRID {index + 1}") · @racer.Code</span>
+                            <h2>@racer.Nickname</h2>
+                            <p>@racer.FullName</p>
+                        </div>
+                    </div>
+                    <span class="roster-status roster-status-@statusClass">@racer.Status</span>
+                </div>
+                <div class="roster-stats">
+                    <span><b>@racer.Races</b>RACES</span>
+                    <span><b>@racer.Wins</b>WINS</span>
+                    <span><b>@racer.Points</b>POINTS</span>
+                </div>
+            </article>
+        }
+    </div>
+    <a class="button button-lime register-inline" asp-controller="NfsRegistration" asp-action="Create">Join the grid ↗</a>
+</section>

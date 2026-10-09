@@ -1,0 +1,3 @@
+@model RegistrationConfirmation
+@{ ViewData["Title"] = "Registration received"; }
+<section class="confirmation wrap"><div class="confirm-mark">✓</div><div class="eyebrow">ENTRY RECEIVED <span>THANK YOU</span></div><h1>You’re in the <em>queue.</em></h1><p><b>@Model.RegisteredName</b> has been submitted for @Model.Game. An admin will review the registration before it appears publicly.</p><div class="reference-card"><small>REGISTRATION REFERENCE</small><strong>@Model.Reference</strong><span>Keep this reference for event check-in.</span></div><a class="button button-lime" asp-controller="PublicSite" asp-action="Index">Back to the event site <span>↗</span></a></section>

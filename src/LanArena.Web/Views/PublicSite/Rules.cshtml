@@ -1,0 +1,66 @@
+@{ ViewData["Title"] = "Tournament Rules"; }
+<style>
+.rules-tabs{display:flex;gap:10px;border-bottom:1px solid #383537;margin:24px 0 0;padding-bottom:12px}.rules-tab{min-width:150px;padding:13px 20px;border:1px solid #383537;background:#151517;color:#b7b0a6;font:700 15px var(--mono);letter-spacing:1px;cursor:pointer;transition:color .2s,border-color .2s,background .2s}.rules-tab:hover{color:var(--accent);border-color:#66883f}.rules-tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#141414;box-shadow:0 0 22px #a7f4442b}.rules-panel{padding-top:20px}.rules-panel[hidden]{display:none}.rules-panel-intro{color:#aaa198;margin:0 0 14px}.rules-tabs:focus-visible,.rules-tab:focus-visible{outline:2px solid var(--accent);outline-offset:3px}@@media(max-width:480px){.rules-tabs{display:grid;grid-template-columns:1fr 1fr}.rules-tab{min-width:0;padding:12px 10px;font-size:13px}}
+</style>
+<section class="page-hero wrap"><div class="eyebrow">Scienter Welfare Team <span>PLAYER RULES</span></div><h1>Know the <em>rules.</em></h1><p>Choose your game to view its tournament format, competition rules, and match-day instructions.</p></section>
+<section class="section wrap" aria-label="Tournament rules">
+    <div class="rules-tabs" role="tablist" aria-label="Choose game rules">
+        <button class="rules-tab" id="tab-cod4" type="button" role="tab" aria-selected="true" aria-controls="panel-cod4" tabindex="0">CALL OF DUTY 4</button>
+        <button class="rules-tab" id="tab-nfs" type="button" role="tab" aria-selected="false" aria-controls="panel-nfs" tabindex="-1">NEED FOR SPEED</button>
+    </div>
+    <div class="rules-panel" id="panel-cod4" role="tabpanel" aria-labelledby="tab-cod4" tabindex="0">
+        <p class="rules-panel-intro">COD4 Promod · two-round team tournament · five main players per team.</p>
+        <div class="rules-grid">
+            <article class="rule-card"><span>01 · TOURNAMENT FORMAT</span><h2>Two rounds</h2><ul><li>Round 1 is Team Deathmatch.</li><li>The top four teams from Round 1 qualify for Round 2.</li><li>Round 2 is Search &amp; Destroy, played as a bracket.</li></ul></article>
+            <article class="rule-card"><span>02 · ROUND 1</span><h2>Team Deathmatch</h2><ul><li>Maps: Backlot, Crash, and Crossfire.</li><li>Each matchup is played on one map.</li><li>A toss decides map and side selection: the toss winner chooses the map; the other team chooses its side.</li><li>Teams earn points from their performance. The leaderboard is finalized after all Round 1 matches.</li></ul></article>
+            <article class="rule-card"><span>03 · PROMOD 2025</span><h2>Weapon limits</h2><ul><li><b>Assault rifles:</b> M4A1, AK-47, G36C — no team limit.</li><li><b>SMGs:</b> MP5, AK-74u — maximum two SMG players per team.</li><li><b>Snipers:</b> M40A3, R700 — maximum one sniper per team.</li><li><b>Shotguns:</b> W1200, M1014 — maximum one shotgun per team.</li></ul></article>
+            <article class="rule-card"><span>04 · ROUND 2</span><h2>Search &amp; Destroy</h2><ul><li>The four qualifying teams are placed in the tournament bracket.</li><li>Maps: Backlot, Crash, and Crossfire.</li><li>A toss decides map and side selection: the toss winner chooses the map; the other team chooses its side.</li><li>Match winners advance through the bracket according to the required round/map wins.</li></ul></article>
+            <article class="rule-card"><span>05 · MATCH DAY</span><h2>Before your match</h2><ul><li>All players must be present and ready before the scheduled match time.</li><li>Check your keyboard, mouse, headset, and other equipment before play.</li><li>Report technical problems to the organizers before the match starts.</li><li>After a match starts, technical complaints may not be accepted unless organizers approve them.</li></ul></article>
+            <article class="rule-card"><span>06 · ROSTER &amp; CONDUCT</span><h2>Play fair</h2><ul><li>Use only the registered roster. An approved substitute may replace a player.</li><li>COD4 nicknames, EPF numbers, and GUIDs must be unique.</li><li>Follow referee instructions and keep the event area respectful.</li><li>No cheats, exploits, or unauthorized modifications. Referees handle pauses, restarts, and disputes.</li></ul></article>
+        </div>
+    </div>
+    <div class="rules-panel" id="panel-nfs" role="tabpanel" aria-labelledby="tab-nfs" tabindex="0" hidden>
+        <p class="rules-panel-intro">Need for Speed: Most Wanted 2005 · individual championship · fair play applies to every heat.</p>
+        <div class="rules-grid">
+            <article class="rule-card"><span>01 · ENTRY &amp; ASSIGNMENTS</span><h2>Check in ready</h2><ul><li>Complete tournament registration before participating.</li><li>Use your registered nickname throughout the tournament.</li><li>A maximum of four players compete in each race.</li><li>Use the PC and race position assigned by the tournament admin.</li></ul></article>
+            <article class="rule-card"><span>02 · RACE SETUP</span><h2>Follow the event setup</h2><ul><li>Use the approved tournament car and performance setup.</li><li>Race on the track and in the mode selected by the tournament admin.</li><li>Wait for the admin or referee signal before starting.</li></ul></article>
+            <article class="rule-card"><span>03 · FAIR PLAY</span><h2>Race with respect</h2><ul><li>Cheats, trainers, speed hacks, modified game files, and other unfair software are prohibited.</li><li>Normal racing contact and normal in-game shortcuts are allowed.</li><li>Intentional ramming, blocking, or trying to ruin another player’s race is prohibited.</li><li>Glitches, bug exploits, and out-of-map tricks are not allowed.</li><li>No abusive language, fighting, harassment, or disturbing the tournament environment. Respect each other and enjoy the tournament.</li></ul></article>
+            <article class="rule-card"><span>04 · RACE INCIDENTS</span><h2>Restarts &amp; DNF</h2><ul><li>Player mistakes—such as a bad start, wrong turn, or crash—do not restart a race.</li><li>For a genuine technical issue, such as a PC or game crash or LAN connection failure, the admin or referee may decide to restart.</li><li>Intentionally leaving a race may be recorded as DNF (Did Not Finish).</li></ul></article>
+            <article class="rule-card"><span>05 · RESULTS &amp; POINTS</span><h2>Finish position counts</h2><ul><li>Race results are mainly decided by final finishing position.</li><li><b>1st place:</b> 10 points.</li><li><b>2nd place:</b> 7 points. <b>3rd place:</b> 5 points.</li><li><b>4th place:</b> 3 points. <b>DNF:</b> 0 points.</li></ul></article>
+            <article class="rule-card"><span>06 · DISPUTES &amp; DECISIONS</span><h2>Referee authority</h2><ul><li>Report a complaint or race-result dispute to the tournament admin immediately after the race.</li><li>If players are tied on points, race wins, finishing positions, and race times may be used as tie-breakers.</li><li>The tournament admin or referee makes the final decision.</li></ul></article>
+        </div>
+    </div>
+</section>
+@section Scripts {
+<script>
+(() => {
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const activate = (tab, moveFocus = false, updateHash = true) => {
+    tabs.forEach(item => {
+      const selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
+    });
+    if (updateHash) window.history.replaceState(null, '', `#${tab.getAttribute('aria-controls')}`);
+    if (moveFocus) tab.focus();
+  };
+  const linkedTab = tabs.find(tab => tab.getAttribute('aria-controls') === window.location.hash.slice(1));
+  if (linkedTab) activate(linkedTab, false, false);
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => activate(tab));
+    tab.addEventListener('keydown', event => {
+      let next = index;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      activate(tabs[next], true);
+    });
+  });
+})();
+</script>
+}
+

@@ -1,0 +1,99 @@
+@model PublicTournamentSnapshot
+@{ ViewData["Title"] = "COD4 Teams"; }
+@section Styles {
+    <link rel="stylesheet" href="~/css/teams-arena.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/teams-card-impact.css" asp-append-version="true" />
+}
+<section class="page-hero wrap team-page-hero"><div class="eyebrow"><i class="team-live-dot"></i> CALL OF DUTY 4 · PROMOD <span>5V5 TEAM TOURNAMENT</span></div><h1>Meet the <em>squads.</em></h1><p>Every registered team, its current status, and its roster.</p><div class="page-meta"><span>@Model.Teams.Count teams</span><span>5 main players · up to 1 substitute</span></div><div class="team-hero-code" aria-hidden="true">DEPLOY<br /><b>YOUR SQUAD</b></div></section>
+<section class="section wrap roster-grid team-roster-grid">
+    @foreach (var team in Model.Teams.OrderByDescending(t => t.Points))
+    {
+        var statusClass = team.Status.ToLowerInvariant() switch
+        {
+            "approved" => "approved",
+            "rejected" => "rejected",
+            _ => "pending"
+        };
+        <article class="roster-card">
+            <div class="roster-card-head">
+                @if (!string.IsNullOrWhiteSpace(team.LogoPath))
+                {
+                    <span class="roster-logo-wrap" aria-label="@team.Name logo">
+                        <img class="roster-team-logo" src="@team.LogoPath" alt="" />
+                    </span>
+                }
+                else
+                {
+                    <span class="team-abbr" aria-hidden="true">@team.ShortName</span>
+                }
+                <span class="roster-status roster-status-@statusClass">@team.Status</span>
+            </div>
+            <h2>@team.Name</h2>
+            <p>CAPTAIN · @team.Captain</p>
+            <div class="roster-stats"><span><b>@team.Played</b>MATCHES</span><span><b>@team.Wins</b>WINS</span><span><b>@team.Points</b>POINTS</span></div>
+            <div class="roster-members" aria-label="Player nicknames">
+                @foreach (var player in team.Players)
+                {
+                    <span>@player</span>
+                }
+            </div>
+        </article>
+    }
+</section>
+@section Scripts {
+<script>
+(() => {
+    let viewer;
+    function closeViewer() {
+        viewer?.remove();
+        viewer = null;
+    }
+    document.querySelectorAll('.team-roster-grid .roster-card').forEach(card => {
+        card.addEventListener('pointerenter', () => {
+            closeViewer();
+            viewer = document.createElement('div');
+            viewer.className = 'team-logo-viewer';
+            viewer.setAttribute('aria-hidden', 'true');
+            const bounds = card.getBoundingClientRect();
+            viewer.style.left = (bounds.left + bounds.width / 2) + 'px';
+            viewer.style.top = (bounds.top + bounds.height / 2) + 'px';
+            const blast = document.createElement('span');
+            blast.className = 'team-logo-blast';
+            blast.innerHTML = '<i></i><b></b>';
+            viewer.append(blast);
+            const source = card.querySelector('.roster-team-logo');
+            if (source) {
+                const image = source.cloneNode(true);
+                image.className = 'team-logo-viewer-image';
+                image.alt = '';
+                const sourceBounds = source.getBoundingClientRect();
+                viewer.style.width = (sourceBounds.width * 10) + 'px';
+                viewer.style.height = (sourceBounds.height * 10) + 'px';
+                viewer.append(image);
+            } else {
+                const fallback = card.querySelector('.team-abbr')?.cloneNode(true) ?? document.createElement('span');
+                fallback.className = 'team-logo-viewer-fallback';
+                fallback.setAttribute('aria-hidden', 'true');
+                viewer.append(fallback);
+            }
+            document.body.append(viewer);
+            requestAnimationFrame(() => viewer?.classList.add('is-active'));
+        });
+        card.addEventListener('pointerleave', closeViewer);
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeViewer();
+    });
+})();
+</script>
+}
+
+
+
+
+
+
+
+
+
+

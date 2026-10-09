@@ -1,0 +1,36 @@
+@model Cod4RegistrationInput
+@{ ViewData["Title"] = "COD4 Team Registration"; var playerFields = new[] { ("MainPlayerOne", "MainPlayerOneRealName", "EpfNoOne", "GuidOne"), ("MainPlayerTwo", "MainPlayerTwoRealName", "EpfNoTwo", "GuidTwo"), ("MainPlayerThree", "MainPlayerThreeRealName", "EpfNoThree", "GuidThree"), ("MainPlayerFour", "MainPlayerFourRealName", "EpfNoFour", "GuidFour"), ("MainPlayerFive", "MainPlayerFiveRealName", "EpfNoFive", "GuidFive") }; }
+<section class="page-hero wrap"><div class="eyebrow">CALL OF DUTY 4 · TEAM ENTRY <span>Scienter Welfare Team</span></div><h1>Build your <em>roster.</em></h1><p>Register your captain and five main players. Add a substitute if you have one.</p></section>
+<section class="section wrap form-layout">
+    <form asp-controller="Cod4Registration" asp-action="Create" method="post" enctype="multipart/form-data" class="registration-form">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <div class="form-section">
+            <div class="form-section-heading"><span>01</span><div><h2>Team details</h2><p>Set up your team identity and captain contact.</p></div></div>
+            <div class="form-grid">
+                <div class="field"><label asp-for="TeamName">TEAM NAME <i>REQUIRED</i></label><input asp-for="TeamName" placeholder="e.g. Team Alpha" autocomplete="organization" /><span asp-validation-for="TeamName"></span></div>
+                <div class="field"><label asp-for="ShortName">SHORT NAME <i>2–4 CHARACTERS</i></label><input asp-for="ShortName" placeholder="ALP" maxlength="4" /><span asp-validation-for="ShortName"></span></div>
+                <div class="field"><label asp-for="CaptainName">CAPTAIN FULL NAME</label><input asp-for="CaptainName" placeholder="Your name" autocomplete="name" /><span asp-validation-for="CaptainName"></span></div>
+                <div class="field"><label asp-for="Phone">PHONE NUMBER</label><input asp-for="Phone" placeholder="+94 77 123 4567" autocomplete="tel" /><span asp-validation-for="Phone"></span></div>
+                <div class="field full"><label asp-for="Email">EMAIL ADDRESS <i>OPTIONAL</i></label><input asp-for="Email" placeholder="captain@example.com" autocomplete="email" /><span asp-validation-for="Email"></span></div>
+                <div class="field full"><label asp-for="TeamLogo">TEAM LOGO <i>OPTIONAL · JPG OR PNG · MAX 2 MB</i></label><input asp-for="TeamLogo" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" /><small>Upload a JPG or PNG image no larger than 2 MB.</small><span asp-validation-for="TeamLogo"></span></div>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-section-heading"><span>02</span><div><h2>Main roster</h2><p>Enter each player's real name, in-game name and EPF number. GUID format: TEAMSHORT_EPFNO_POSITION · example: ALP_INT1_1.</p></div></div>
+            <div class="player-entry-list">
+            @for (var i = 0; i < playerFields.Length; i++)
+            {
+                var nicknameField = playerFields[i].Item1;
+                var realNameField = playerFields[i].Item2;
+                var epfField = playerFields[i].Item3;
+                var guidField = playerFields[i].Item4;
+                <div class="player-entry main-player-entry"><span class="player-entry-number">@(i + 1).<small>MAIN</small></span><div class="field"><label for="@realNameField">REAL NAME</label><input id="@realNameField" name="@realNameField" value="@(Model.GetType().GetProperty(realNameField)?.GetValue(Model))" placeholder="Player's full name" maxlength="80" autocomplete="name" required /></div><div class="field"><label for="@nicknameField">IN-GAME NAME</label><input id="@nicknameField" name="@nicknameField" value="@(Model.GetType().GetProperty(nicknameField)?.GetValue(Model))" placeholder="Player nickname" maxlength="24" autocomplete="off" required /></div><div class="field"><label for="@epfField">EPF NO <i>OR INTERN CODE, e.g. INT1</i></label><input id="@epfField" name="@epfField" value="@(Model.GetType().GetProperty(epfField)?.GetValue(Model))" placeholder="EPF number or INT1" maxlength="24" pattern="[A-Za-z0-9-]+" data-epf-number required /></div><div class="field"><label for="@guidField">COD4 GUID <i>AUTO-GENERATED</i></label><input id="@guidField" name="@guidField" value="@(Model.GetType().GetProperty(guidField)?.GetValue(Model))" placeholder="Set team short name and EPF no" maxlength="64" class="generated-guid" data-cod4-guid data-guid-position="@(i + 1)" aria-readonly="true" readonly /></div></div>
+            }
+            </div>
+            <div class="player-entry substitute-entry"><span class="player-entry-number">SUB<small>OPTIONAL</small></span><div class="field"><label asp-for="SubstituteRealName">REAL NAME</label><input asp-for="SubstituteRealName" placeholder="Substitute's full name" maxlength="80" autocomplete="name" /></div><div class="field"><label asp-for="Substitute">IN-GAME NAME</label><input asp-for="Substitute" placeholder="Substitute nickname" maxlength="24" autocomplete="off" /></div><div class="field"><label asp-for="SubstituteEpfNo">EPF NO <i>OR INTERN CODE</i></label><input asp-for="SubstituteEpfNo" placeholder="EPF number or INT1" maxlength="24" pattern="[A-Za-z0-9-]+" data-epf-number autocomplete="off" /></div><div class="field"><label asp-for="SubstituteGuid">COD4 GUID <i>AUTO-GENERATED</i></label><input asp-for="SubstituteGuid" placeholder="Set team short name and EPF no" maxlength="64" class="generated-guid" data-cod4-guid data-guid-position="SUB" aria-readonly="true" readonly /></div></div>
+        </div>
+        <div class="form-section rules-box"><label class="check-label"><input asp-for="AcceptRules" /><span>I confirm this roster is accurate and agree to the <a asp-controller="PublicSite" asp-action="Rules">tournament rules</a>.</span></label><span asp-validation-for="AcceptRules"></span></div>
+        <div class="form-submit"><p>Registration status: <b>Pending admin review</b><br />Your roster is locked after approval.</p><button class="button button-lime" type="submit">Submit team registration <span>↗</span></button></div>
+    </form>
+    <aside class="form-aside"><div class="aside-sticky"><div class="eyebrow">ENTRY CHECKLIST</div><h3>Before you<br /><em>submit.</em></h3><ul><li><span>01</span> Five unique player names</li><li><span>02</span> EPF number or intern code per starter</li><li><span>03</span> GUID generated from team, EPF and position</li><li><span>04</span> Substitute is optional</li></ul></div></aside>
+</section>

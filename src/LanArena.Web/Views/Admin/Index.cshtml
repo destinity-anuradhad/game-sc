@@ -1,0 +1,241 @@
+@model LanArena.Web.Features.Admin.AdminDashboardModel
+@{
+    ViewData["Title"] = "Registration management";
+    var statuses = new[] { "Pending", "Approved", "Rejected", "Suspended", "Disqualified" };
+}
+@section Styles {
+<link rel="stylesheet" href="~/css/admin-dashboard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/admin-details.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/admin-edit.css" asp-append-version="true" />
+}
+<div class="admin-wrap">
+    @if (TempData["AdminNotice"] is string notice) { <div class="admin-feedback is-success" role="status">@notice</div> }
+    @if (TempData["AdminError"] is string error) { <div class="admin-feedback is-error" role="alert">@error</div> }
+    <header class="admin-top">
+        <div>
+            <div class="admin-kicker"><i></i> BATTLE ARENA <span>·</span> REGISTRATION DESK</div>
+            <h1>Registration <em>control.</em></h1>
+            <p>Review entries, check player details, and update approval status.</p>
+        </div>
+        <form method="post" action="/admin/logout" class="admin-signout">
+            @Html.AntiForgeryToken()
+            <button class="admin-logout" type="submit"><span aria-hidden="true">↗</span> Sign out</button>
+        </form>
+    </header>
+
+    <section class="admin-overview" aria-label="Registration overview">
+        <article class="admin-metric admin-metric-pending"><span>NEEDS REVIEW</span><strong>@(Model.Teams.Count(t => t.Status == "Pending") + Model.Racers.Count(r => r.Status == "Pending"))</strong><small>entries waiting</small></article>
+        <article class="admin-metric admin-metric-cod"><span>COD4 TEAMS</span><strong>@Model.Teams.Count</strong><small>@Model.Teams.Count(t => t.Status == "Pending") pending</small></article>
+        <article class="admin-metric admin-metric-nfs"><span>NFS RACERS</span><strong>@Model.Racers.Count</strong><small>@Model.Racers.Count(r => r.Status == "Pending") pending</small></article>
+        <article class="admin-metric admin-metric-approved"><span>APPROVED</span><strong>@(Model.Teams.Count(t => t.Status == "Approved") + Model.Racers.Count(r => r.Status == "Approved"))</strong><small>ready for the arena</small></article>
+    </section>
+
+    <section class="admin-registrations" id="registrations">
+        <div class="admin-section-heading">
+            <div><div class="admin-kicker">ENTRY MANAGEMENT</div><h2>Registration queue</h2></div>
+            <span class="admin-total">@Model.Teams.Count COD4 <i>·</i> @Model.Racers.Count NFS</span>
+        </div>
+        <div class="admin-toolbar">
+            <div class="admin-tabs" role="tablist" aria-label="Registration type">
+                <button class="admin-tab is-active" type="button" role="tab" id="tab-cod4" aria-selected="true" aria-controls="cod4" data-admin-tab="cod4"><span class="admin-tab-mark cod-mark">C4</span><span>COD4 teams</span><b>@Model.Teams.Count</b></button>
+                <button class="admin-tab" type="button" role="tab" id="tab-nfs" aria-selected="false" aria-controls="nfs" data-admin-tab="nfs"><span class="admin-tab-mark nfs-mark">N</span><span>NFS racers</span><b>@Model.Racers.Count</b></button>
+            </div>
+            <div class="admin-filters">
+                <label class="admin-search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search registrations" aria-label="Search registrations" data-admin-search /><kbd>⌕</kbd></label>
+                <label class="admin-status-filter"><span class="sr-only">Filter by status</span><select aria-label="Filter by status" data-admin-status><option value="all">All statuses</option>@foreach (var status in statuses){<option value="@status.ToLowerInvariant()">@status</option>}</select></label>
+            </div>
+        </div>
+
+        <section class="admin-panel is-active" id="cod4" role="tabpanel" aria-labelledby="tab-cod4" data-admin-panel="cod4">
+            <div class="admin-list-heading"><span>TEAM REGISTRATIONS</span><span data-admin-result-count>@Model.Teams.Count entries</span></div>
+            <div class="admin-card-list" data-admin-list>
+                @foreach (var team in Model.Teams.OrderBy(t => t.Status == "Pending" ? 0 : 1).ThenBy(t => t.Name))
+                {
+                    var teamPlayers = team.Players.OrderBy(p => p.Role == "Substitute").ToList();
+                    var searchText = $"{team.Name} {team.ShortName} {team.Captain} {string.Join(" ", team.Players.Select(p => p.Nickname))}";
+                    var statusClass = team.Status.ToLowerInvariant();
+                    <article class="admin-entry" data-admin-entry data-status="@statusClass" data-search="@searchText">
+                        <button class="admin-entry-main admin-entry-toggle" type="button" aria-expanded="false" aria-controls="team-details-@team.Id" data-entry-toggle>
+                            <div class="admin-entry-identity">
+                                @if (!string.IsNullOrWhiteSpace(team.LogoPath)) { <img class="admin-entry-logo" src="@team.LogoPath" alt="" /> }
+                                else { <span class="admin-entry-logo admin-entry-initials">@team.ShortName</span> }
+                                <div><div class="admin-entry-type">COD4 · TEAM</div><h3>@team.Name</h3><p>@team.ShortName <i>·</i> Captain @team.Captain</p></div>
+                            </div>
+                            <span class="admin-entry-toggle-side"><span class="admin-status-badge status-@statusClass"><i></i>@team.Status</span><span class="admin-expand-label">VIEW DETAILS <b aria-hidden="true">⌄</b></span></span>
+                        </button>
+                        <div class="admin-entry-details" id="team-details-@team.Id" hidden>
+                            <div class="admin-detail-heading"><span>PLAYER ROSTER</span><small>@teamPlayers.Count PLAYERS · COD4</small></div>
+                            <div class="admin-player-grid">
+                                @foreach (var player in teamPlayers)
+                                {
+                                    <article class="admin-player-detail">
+                                        <span class="admin-player-role">@player.Role player</span>
+                                        <h4>@player.Nickname</h4>
+                                        <dl>
+                                            <div><dt>Full name</dt><dd>@(string.IsNullOrWhiteSpace(player.RealName) ? "Not provided" : player.RealName)</dd></div>
+                                            <div><dt>EPF number</dt><dd>@(string.IsNullOrWhiteSpace(player.EpfNo) ? "Not provided" : player.EpfNo)</dd></div>
+                                            <div><dt>COD4 GUID</dt><dd>@(string.IsNullOrWhiteSpace(player.Guid) ? "Not provided" : player.Guid)</dd></div>
+                                        </dl>
+                                    </article>
+                                }
+                            </div>
+                            <div class="admin-team-contact"><span>TEAM CONTACT</span><div><b>@team.Captain</b><small>Captain</small></div><div><b>@team.Phone</b><small>Phone</small></div><div><b>@(string.IsNullOrWhiteSpace(team.Email) ? "Not provided" : team.Email)</b><small>Email</small></div></div>
+                            <details class="admin-edit-details">
+                                <summary><span class="admin-edit-icon">✎</span> Edit all team and roster details</summary>
+                                <form method="post" enctype="multipart/form-data" action="/admin/registration/cod4/@team.Id/edit" class="admin-edit-form">
+                                    @Html.AntiForgeryToken()
+                                    <div class="admin-edit-section"><div class="admin-edit-section-title">TEAM INFORMATION</div><div class="admin-edit-grid">
+                                        <label class="admin-edit-field"><span>Team name</span><input name="Name" value="@team.Name" maxlength="100" required /></label>
+                                        <label class="admin-edit-field"><span>Short name</span><input name="ShortName" value="@team.ShortName" minlength="2" maxlength="4" pattern="[A-Za-z0-9]{2,4}" required /></label>
+                                        <label class="admin-edit-field"><span>Captain name</span><input name="Captain" value="@team.Captain" maxlength="80" required /></label>
+                                        <label class="admin-edit-field"><span>Phone</span><input name="Phone" value="@team.Phone" maxlength="30" required /></label>
+                                        <label class="admin-edit-field"><span>Email</span><input type="email" name="Email" value="@team.Email" maxlength="120" /></label>
+                                        <div class="admin-edit-field admin-logo-field"><span>Team logo</span><div class="admin-logo-control">@if (!string.IsNullOrWhiteSpace(team.LogoPath)){<img src="@team.LogoPath" alt="Current team logo" />}<label class="admin-file-pick">Choose JPG or PNG<input type="file" name="Logo" accept="image/png,image/jpeg" /></label>@if (!string.IsNullOrWhiteSpace(team.LogoPath)){<label class="admin-remove-logo"><input type="checkbox" name="RemoveLogo" value="true" /> Remove current logo</label>}</div></div>
+                                    </div></div>
+                                    <div class="admin-edit-section"><div class="admin-edit-section-title">TOURNAMENT STATS</div><div class="admin-edit-grid admin-stats-grid">
+                                        <label class="admin-edit-field"><span>Matches played</span><input type="number" min="0" name="Played" value="@team.Played" /></label>
+                                        <label class="admin-edit-field"><span>Wins</span><input type="number" min="0" name="Wins" value="@team.Wins" /></label>
+                                        <label class="admin-edit-field"><span>Losses</span><input type="number" min="0" name="Losses" value="@team.Losses" /></label>
+                                        <label class="admin-edit-field"><span>Score difference</span><input type="number" name="ScoreDifference" value="@team.ScoreDifference" /></label>
+                                        <label class="admin-edit-field"><span>Points</span><input type="number" min="0" name="Points" value="@team.Points" /></label>
+                                    </div></div>
+                                    <div class="admin-edit-section"><div class="admin-edit-section-title">ROSTER DETAILS <small>All player names, EPF numbers, and GUIDs</small></div><div class="admin-edit-player-list">
+                                        @for (var playerIndex = 0; playerIndex < teamPlayers.Count; playerIndex++)
+                                        {
+                                            var player = teamPlayers[playerIndex];
+                                            <div class="admin-edit-player">
+                                                <input type="hidden" name="Players[@playerIndex].Id" value="@player.Id" />
+                                                <label class="admin-edit-field"><span>Role</span><select name="Players[@playerIndex].Role"><option value="Main" selected="@(player.Role == "Main")">Main player</option><option value="Substitute" selected="@(player.Role == "Substitute")">Substitute</option></select></label>
+                                                <label class="admin-edit-field"><span>Full name</span><input name="Players[@playerIndex].RealName" value="@player.RealName" maxlength="80" required /></label>
+                                                <label class="admin-edit-field"><span>Nickname</span><input name="Players[@playerIndex].Nickname" value="@player.Nickname" maxlength="24" required /></label>
+                                                <label class="admin-edit-field"><span>EPF number</span><input name="Players[@playerIndex].EpfNo" value="@player.EpfNo" maxlength="24" pattern="[A-Za-z0-9-]+" required /></label>
+                                                <label class="admin-edit-field"><span>COD4 GUID</span><input name="Players[@playerIndex].Guid" value="@player.Guid" maxlength="64" /></label>
+                                            </div>
+                                        }
+                                    </div></div>
+                                    <div class="admin-edit-actions"><span>Logo uploads must be JPG or PNG, up to 2 MB.</span><button type="submit">Save all team details <b aria-hidden="true">↗</b></button></div>
+                                </form>
+                            </details>
+                        </div>
+                        <div class="admin-entry-bottom">
+                            <span class="admin-entry-hint">Select the card to inspect full player details</span>
+                            <form method="post" action="/admin/registration/cod4/@team.Id/status" class="admin-review-form">
+                                @Html.AntiForgeryToken()
+                                <label><span class="sr-only">Status for @team.Name</span><select name="status">@foreach (var status in statuses){<option value="@status" selected="@(team.Status == status)">@status</option>}</select></label>
+                                <button type="submit">Update status <span aria-hidden="true">↗</span></button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+            <p class="admin-empty" data-admin-empty hidden>No teams match those filters.</p>
+        </section>
+
+        <section class="admin-panel" id="nfs" role="tabpanel" aria-labelledby="tab-nfs" data-admin-panel="nfs" hidden>
+            <div class="admin-list-heading"><span>RACER REGISTRATIONS</span><span data-admin-result-count>@Model.Racers.Count entries</span></div>
+            <div class="admin-card-list" data-admin-list>
+                @foreach (var racer in Model.Racers.OrderBy(r => r.Status == "Pending" ? 0 : 1).ThenBy(r => r.Code))
+                {
+                    var searchText = $"{racer.Code} {racer.Nickname} {racer.FullName} {racer.Phone} {racer.Email}";
+                    var statusClass = racer.Status.ToLowerInvariant();
+                    <article class="admin-entry admin-entry-nfs" data-admin-entry data-status="@statusClass" data-search="@searchText">
+                        <div class="admin-entry-main">
+                            <div class="admin-entry-identity">
+                                <span class="admin-entry-logo admin-entry-initials nfs-initials">NFS</span>
+                                <div><div class="admin-entry-type">NFS · RACER <span>@racer.Code</span></div><h3>@racer.Nickname</h3><p>@racer.FullName <i>·</i> @racer.Phone</p></div>
+                            </div>
+                            <span class="admin-status-badge status-@statusClass"><i></i>@racer.Status</span>
+                        </div>
+                        <div class="admin-entry-bottom">
+                            <div class="admin-contact-inline"><span>EMAIL</span><b>@(string.IsNullOrWhiteSpace(racer.Email) ? "Not provided" : racer.Email)</b></div>
+                            <form method="post" action="/admin/registration/nfs/@racer.Id/status" class="admin-review-form">
+                                @Html.AntiForgeryToken()
+                                <label><span class="sr-only">Status for @racer.Nickname</span><select name="status">@foreach (var status in statuses){<option value="@status" selected="@(racer.Status == status)">@status</option>}</select></label>
+                                <button type="submit">Update status <span aria-hidden="true">↗</span></button>
+                            </form>
+                        </div>
+                        <details class="admin-edit-details admin-racer-edit">
+                            <summary><span class="admin-edit-icon">✎</span> Edit all racer details and results</summary>
+                            <form method="post" action="/admin/registration/nfs/@racer.Id/edit" class="admin-edit-form">
+                                @Html.AntiForgeryToken()
+                                <div class="admin-edit-section"><div class="admin-edit-section-title">RACER INFORMATION</div><div class="admin-edit-grid">
+                                    <label class="admin-edit-field"><span>Racer code</span><input name="Code" value="@racer.Code" maxlength="12" required /></label>
+                                    <label class="admin-edit-field"><span>Nickname</span><input name="Nickname" value="@racer.Nickname" maxlength="24" required /></label>
+                                    <label class="admin-edit-field"><span>Full name</span><input name="FullName" value="@racer.FullName" maxlength="80" required /></label>
+                                    <label class="admin-edit-field"><span>Phone</span><input name="Phone" value="@racer.Phone" maxlength="30" required /></label>
+                                    <label class="admin-edit-field"><span>Email</span><input type="email" name="Email" value="@racer.Email" maxlength="120" /></label>
+                                    <label class="admin-edit-field"><span>Student ID</span><input name="StudentId" value="@racer.StudentId" maxlength="40" /></label>
+                                </div></div>
+                                <div class="admin-edit-section"><div class="admin-edit-section-title">CHAMPIONSHIP RESULTS</div><div class="admin-edit-grid admin-stats-grid">
+                                    <label class="admin-edit-field"><span>Races</span><input type="number" min="0" name="Races" value="@racer.Races" /></label>
+                                    <label class="admin-edit-field"><span>1st place</span><input type="number" min="0" name="Wins" value="@racer.Wins" /></label>
+                                    <label class="admin-edit-field"><span>2nd place</span><input type="number" min="0" name="SecondPlaces" value="@racer.SecondPlaces" /></label>
+                                    <label class="admin-edit-field"><span>3rd place</span><input type="number" min="0" name="ThirdPlaces" value="@racer.ThirdPlaces" /></label>
+                                    <label class="admin-edit-field"><span>Points</span><input type="number" min="0" name="Points" value="@racer.Points" /></label>
+                                </div></div>
+                                <div class="admin-edit-actions"><span>Changes are saved to the tournament database.</span><button type="submit">Save racer details <b aria-hidden="true">↗</b></button></div>
+                            </form>
+                        </details>
+                    </article>
+                }
+            </div>
+            <p class="admin-empty" data-admin-empty hidden>No racers match those filters.</p>
+        </section>
+    </section>
+</div>
+@section Scripts {
+<script>
+(() => {
+    const tabs = [...document.querySelectorAll('[data-admin-tab]')];
+    const panels = [...document.querySelectorAll('[data-admin-panel]')];
+    const search = document.querySelector('[data-admin-search]');
+    const status = document.querySelector('[data-admin-status]');
+    function activate(name) {
+        tabs.forEach(tab => {
+            const active = tab.dataset.adminTab === name;
+            tab.classList.toggle('is-active', active);
+            tab.setAttribute('aria-selected', active);
+            tab.tabIndex = active ? 0 : -1;
+        });
+        panels.forEach(panel => {
+            const active = panel.dataset.adminPanel === name;
+            panel.classList.toggle('is-active', active);
+            panel.hidden = !active;
+        });
+        filterEntries();
+    }
+    function filterEntries() {
+        const panel = panels.find(item => item.classList.contains('is-active'));
+        if (!panel) return;
+        const query = (search?.value || '').trim().toLocaleLowerCase();
+        const selectedStatus = status?.value || 'all';
+        const entries = [...panel.querySelectorAll('[data-admin-entry]')];
+        let visible = 0;
+        entries.forEach(entry => {
+            const matches = (!query || entry.dataset.search.toLocaleLowerCase().includes(query)) && (selectedStatus === 'all' || entry.dataset.status === selectedStatus);
+            entry.hidden = !matches;
+            if (matches) visible++;
+        });
+        panel.querySelector('[data-admin-empty]').hidden = visible !== 0;
+        panel.querySelector('[data-admin-result-count]').textContent = `${visible} ${visible === 1 ? 'entry' : 'entries'}`;
+    }
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => activate(tab.dataset.adminTab)));
+    tabs.forEach((tab, index) => tab.addEventListener('keydown', event => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        const next = tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+        activate(next.dataset.adminTab);
+        next.focus();
+    }));
+    document.querySelectorAll('[data-entry-toggle]').forEach(button => button.addEventListener('click', () => {
+        const expanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!expanded));
+        document.getElementById(button.getAttribute('aria-controls')).hidden = expanded;
+    }));
+    search?.addEventListener('input', filterEntries);
+    status?.addEventListener('change', filterEntries);
+    const initialPanel = location.hash === '#nfs' ? 'nfs' : 'cod4';
+    activate(initialPanel);
+})();
+</script>
+}

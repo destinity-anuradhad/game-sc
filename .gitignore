@@ -1,0 +1,5 @@
+**/bin/
+**/obj/
+src/LanArena.Web/App_Data/
+*.user
+*.suo

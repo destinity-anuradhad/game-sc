@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LanArena.Application/LanArena.Application.csproj" />
+    <Project Path="src/LanArena.Infrastructure/LanArena.Infrastructure.csproj" />
+    <Project Path="src/LanArena.Web/LanArena.Web.csproj" />
+  </Folder>
+</Solution>

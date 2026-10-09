@@ -1,0 +1,26 @@
+/* Hover only animates the centered logo viewer, not the team card. */
+.team-roster-grid .roster-card:hover,.team-roster-grid .roster-card:active { z-index:auto!important; transform:none!important; scale:1!important; border-color:inherit!important; box-shadow:none!important; }
+.team-roster-grid .roster-card:hover h2 { color:inherit!important; }
+.team-roster-grid .roster-card:hover .roster-team-logo,.team-roster-grid .roster-card:active .roster-team-logo { z-index:1!important; transform:none!important; filter:none!important; }
+.team-roster-grid .roster-card:hover .roster-members span,.team-roster-grid .roster-card:active .roster-members span { background:inherit!important; color:inherit!important; transform:none!important; }
+.team-roster-grid .roster-logo-wrap:hover,.team-roster-grid .roster-logo-wrap:active { z-index:1!important; }
+.team-roster-grid .roster-logo-wrap:hover::before,.team-roster-grid .roster-logo-wrap:hover::after,.team-roster-grid .roster-logo-wrap:active::before,.team-roster-grid .roster-logo-wrap:active::after,.team-roster-grid .roster-logo-wrap:hover .logo-sparks,.team-roster-grid .roster-logo-wrap:active .logo-sparks { animation:none!important; opacity:0!important; }
+
+.team-logo-viewer { position:fixed; z-index:2147483647; left:0; top:0; width:420px; height:420px; pointer-events:none; opacity:0; transform:translate(-50%,-50%); }
+.team-logo-viewer.is-active { opacity:1; }
+.team-logo-viewer::before,.team-logo-viewer::after { position:absolute; z-index:1; left:50%; top:50%; width:calc(100% + 48px); height:calc(100% + 48px); border:2px solid #c8ff73; background:transparent; box-shadow:0 0 18px #b5ff43b8; content:""; pointer-events:none; transform:translate(-50%,-50%) rotate(45deg); transform-origin:center; animation:diamond-border-rotate 10s linear infinite; }
+.team-logo-viewer::after { width:calc(100% + 24px); height:calc(100% + 24px); border:1px solid #e6ffb0a8; outline:1px solid #b5ff4366; outline-offset:8px; animation-duration:14s; animation-direction:reverse; }
+.team-logo-viewer-image { position:absolute; z-index:3; inset:0; display:block!important; width:100%; height:100%; max-width:none!important; max-height:none!important; box-sizing:border-box; object-fit:contain; border:0; background:transparent; filter:drop-shadow(0 0 18px #b5ff4360); transform:scale(.1); transform-origin:center; rotate:0deg!important; animation:logo-10x-zoom .8s cubic-bezier(.16,.8,.22,1) both; }
+.team-logo-viewer-fallback { position:absolute; z-index:3; inset:0; display:grid; place-items:center; width:100%; height:100%; border:1px solid #b5ff4380; background:#10150d; color:#b5ff43; font:800 clamp(2rem,7vw,5rem)/1 var(--display,sans-serif); box-shadow:0 0 34px #b5ff4350; transform:scale(.1); transform-origin:center; rotate:0deg!important; animation:logo-10x-zoom .8s cubic-bezier(.16,.8,.22,1) both; }
+.team-logo-blast { position:absolute; z-index:2; left:50%; top:50%; width:0; height:0; }
+.team-logo-blast::before,.team-logo-blast::after,.team-logo-blast i,.team-logo-blast b { position:absolute; left:0; top:0; display:block; box-sizing:border-box; width:36px; height:36px; border:2px solid #dfff9a; border-radius:50%; box-shadow:0 0 18px #b5ff43aa; content:""; transform:translate(-50%,-50%) scale(.1); animation:blast-ring .9s cubic-bezier(.12,.72,.2,1) both; }
+.team-logo-blast::after { border-color:#fff2b3; animation-delay:.12s; animation-duration:1.05s; }
+.team-logo-blast i { width:54px; height:54px; border-color:#b5ff43; animation-delay:.06s; animation-duration:1.15s; }
+.team-logo-blast b { width:70px; height:70px; border:0; border-radius:0; background:repeating-conic-gradient(from 0deg,transparent 0 9deg,#cfff75 10deg 11deg,transparent 12deg 25deg); -webkit-mask-image:radial-gradient(circle,transparent 0 25%,#000 34% 51%,transparent 64%); mask-image:radial-gradient(circle,transparent 0 25%,#000 34% 51%,transparent 64%); box-shadow:none; animation:blast-rays .8s ease-out .06s both; }
+@keyframes logo-10x-zoom { from { opacity:.35; transform:scale(.1); } to { opacity:1; transform:scale(1); } }
+@keyframes diamond-border-rotate { from { transform:translate(-50%,-50%) rotate(45deg); } to { transform:translate(-50%,-50%) rotate(405deg); } }
+@keyframes blast-ring { 0% { opacity:0; transform:translate(-50%,-50%) scale(.1); } 18% { opacity:1; } 100% { opacity:0; transform:translate(-50%,-50%) scale(10); } }
+@keyframes blast-rays { 0% { opacity:0; transform:translate(-50%,-50%) scale(.1) rotate(0deg); } 20% { opacity:1; } 100% { opacity:0; transform:translate(-50%,-50%) scale(9) rotate(22deg); } }
+@media (max-width:600px) { .team-logo-viewer { max-width:78vw; max-height:70vh; } }
+@media (prefers-reduced-motion:reduce) { .team-logo-viewer::before,.team-logo-viewer::after,.team-logo-viewer-image,.team-logo-viewer-fallback,.team-logo-blast::before,.team-logo-blast::after,.team-logo-blast i,.team-logo-blast b { animation:none!important; } .team-logo-viewer-image,.team-logo-viewer-fallback { transform:scale(1); } }
+
